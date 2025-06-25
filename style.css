@@ -1,125 +1,129 @@
-* { box-sizing: border-box; }
-body {
+* {
   margin: 0;
-  font-family: 'Courier New', monospace;
-  background: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
 }
-.game-container {
-  width: 100%;
-  max-width: 800px;
-  height: 450px;
-  background: #fff;
-  border: 4px solid #222;
-  position: relative;
+
+body {
+  font-family: sans-serif;
+  background-color: #f4f4f4;
   overflow: hidden;
 }
-.game {
+
+#game {
   position: relative;
   width: 100%;
-  height: 100%;
-  background: linear-gradient(#cce, #eef);
+  height: 100vh;
+  background: linear-gradient(#cceeff, #ffffff);
+  overflow: hidden;
 }
-.dino {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  bottom: 60px;
-  left: 50px;
-}
-.dino.green { background: url('https://i.imgur.com/OdL0XPt.png') no-repeat center/cover; }
-.dino.blue  { background: url('https://i.imgur.com/hE5vv2E.png') no-repeat center/cover; }
-.dino.red   { background: url('https://i.imgur.com/SFJklO6.png') no-repeat center/cover; }
-.obstacle { position: absolute; }
-.cactus-small {
-  width: 20px;
-  height: 40px;
-  background: green;
-  bottom: 60px;
-}
-.cactus-large {
-  width: 30px;
-  height: 60px;
-  background: darkgreen;
-  bottom: 60px;
-}
-.bird {
-  width: 50px;
-  height: 35px;
-  background: black;
-  bottom: 130px;
-}
-.ground {
-  position: absolute;
-  width: 100%;
-  height: 20px;
-  background: #444;
-  bottom: 40px;
-}
-.score, .high-score, .timer {
-  position: absolute;
-  font-size: 18px;
-  color: #222;
-}
-.score { top: 10px; left: 10px; }
-.high-score { top: 10px; right: 10px; }
-.timer { top: 10px; left: 50%; transform: translateX(-50%); }
 
-.game-over {
+.dino {
   position: absolute;
-  top: 35%;
-  width: 100%;
-  text-align: center;
+  width: 40px;
+  height: 40px;
+  bottom: 60px;
+  left: 60px;
+  background: green;
+  transition: background 0.3s;
+}
+
+.dino.green { background: green; }
+.dino.blue { background: blue; }
+.dino.red { background: red; }
+.dino.gold { background: gold; }
+
+.obstacle {
+  position: absolute;
+  bottom: 60px;
+  width: 30px;
+  height: 50px;
+  background: #333;
+}
+
+.cactus-small { height: 40px; background: darkgreen; }
+.cactus-large { height: 60px; background: forestgreen; }
+.bird { height: 30px; background: brown; top: 100px !important; }
+
+.power-up {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+.shield { background: cyan; }
+.boost { background: orange; }
+
+.coin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: gold;
+  border-radius: 50%;
+}
+
+#score, #high-score, #timer {
+  position: absolute;
+  top: 10px;
+  font-size: 18px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+}
+
+#score { left: 10px; }
+#high-score { left: 130px; }
+#timer { left: 250px; }
+
+#game-over {
   display: none;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 10px;
 }
-#recent-runs {
-  margin: 10px auto;
-  font-size: 14px;
-  color: #111;
+
+#controls {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
 }
-.start-screen {
+
+#controls button {
+  margin-right: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#start-screen {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #fff;
-  z-index: 10;
+  background: #000000cc;
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 }
-button {
-  font-size: 16px;
-  padding: 8px 16px;
-  margin: 8px;
-  cursor: pointer;
-  border: 2px solid #222;
-  background: #eee;
-}
-.mobile-controls {
+
+.background-text {
   position: absolute;
-  bottom: 10px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-}
-.power-up {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  z-index: 2;
-}
-.shield {
-  background: radial-gradient(cyan, blue);
-}
-.boost {
-  background: radial-gradient(orange, red);
-}
-.dark {
-  background: linear-gradient(#111, #333) !important;
+  font-size: 100px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.05);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
 }
