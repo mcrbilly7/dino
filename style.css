@@ -1,44 +1,90 @@
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
-  overflow: hidden;
-  font-family: sans-serif;
-  background: #f4f4f4;
-}
-#game {
-  width: 100vw;
+  font-family: 'Courier New', monospace;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
-  background-color: #fff;
-  overflow: hidden;
-  position: relative;
 }
-#dino {
-  width: 40px;
-  height: 40px;
+.game-container {
+  width: 100%;
+  max-width: 700px;
+  height: 400px;
+  background: #fff;
+  border: 4px solid #222;
+  position: relative;
+  overflow: hidden;
+}
+.game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(#fff, #ccc);
+}
+.dino {
+  width: 50px;
+  height: 50px;
   background: #444;
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   left: 50px;
   border-radius: 5px;
+  transition: bottom 0.1s;
 }
-.cactus {
+.obstacle {
+  position: absolute;
+  bottom: 20px;
+}
+.cactus-small {
   width: 20px;
   height: 40px;
   background: green;
-  position: absolute;
-  bottom: 10px;
-  right: 0;
 }
-#score {
+.cactus-large {
+  width: 30px;
+  height: 60px;
+  background: darkgreen;
+}
+.bird {
+  width: 40px;
+  height: 30px;
+  background: black;
+  bottom: 100px !important;
+}
+.score {
   position: absolute;
   top: 10px;
   left: 10px;
   font-size: 20px;
+  color: #222;
 }
-#gameOver {
+.game-over {
   position: absolute;
   top: 40%;
   width: 100%;
   text-align: center;
-  font-size: 30px;
   display: none;
+}
+.start-screen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+button {
+  font-size: 18px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border: 2px solid #222;
+  background: #eee;
 }
