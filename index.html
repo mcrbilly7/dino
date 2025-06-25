@@ -10,21 +10,37 @@
   <div class="game-container">
     <div class="start-screen" id="start-screen">
       <h1>🐱‍🏍 Ultimate Dino Runner</h1>
+      <select id="skin-select">
+        <option value="green">Green Dino</option>
+        <option value="blue">Blue Dino</option>
+        <option value="red">Red Dino</option>
+      </select>
       <button id="start-btn">Play</button>
     </div>
+
     <div id="game" class="game">
-      <div id="dino" class="dino"></div>
+      <div id="dino" class="dino green"></div>
       <div id="ground" class="ground"></div>
       <div id="score" class="score">Score: 0</div>
-      <div id="high-score" class="high-score">High Score: 0</div>
+      <div id="high-score" class="high-score">High: 0</div>
+      <div id="timer" class="timer">Time: 0.00s</div>
       <div id="game-over" class="game-over">
         <p>Game Over</p>
+        <div id="recent-runs"></div>
         <button onclick="restartGame()">Restart</button>
+      </div>
+
+      <div class="mobile-controls">
+        <button id="jump-btn">Jump</button>
+        <button id="theme-btn">Theme</button>
+        <button id="music-btn">Music</button>
       </div>
     </div>
   </div>
+
   <audio id="jump-sound" src="jump.mp3" preload="auto"></audio>
   <audio id="hit-sound" src="hit.mp3" preload="auto"></audio>
+  <audio id="bg-music" src="background.mp3" loop preload="auto"></audio>
   <script src="script.js"></script>
 </body>
 </html>
