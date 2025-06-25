@@ -3,44 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ultimate Dino Runner</title>
+  <title>Dino Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-container">
-    <div class="start-screen" id="start-screen">
-      <h1>🐱‍🏍 Ultimate Dino Runner</h1>
+  <div id="start-screen">
+    <h1>Dino Game</h1>
+    <button id="start-btn">Start Game</button>
+    <div>
+      <label for="skin-select">Choose Skin:</label>
       <select id="skin-select">
-        <option value="green">Green Dino</option>
-        <option value="blue">Blue Dino</option>
-        <option value="red">Red Dino</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+        <option value="red">Red</option>
+        <option value="gold">Gold</option>
       </select>
-      <button id="start-btn">Play</button>
-    </div>
-
-    <div id="game" class="game">
-      <div id="dino" class="dino green"></div>
-      <div id="ground" class="ground"></div>
-      <div id="score" class="score">Score: 0</div>
-      <div id="high-score" class="high-score">High: 0</div>
-      <div id="timer" class="timer">Time: 0.00s</div>
-      <div id="game-over" class="game-over">
-        <p>Game Over</p>
-        <div id="recent-runs"></div>
-        <button onclick="restartGame()">Restart</button>
-      </div>
-
-      <div class="mobile-controls">
-        <button id="jump-btn">Jump</button>
-        <button id="theme-btn">Theme</button>
-        <button id="music-btn">Music</button>
-      </div>
     </div>
   </div>
 
+  <div id="game">
+    <!-- Hi Yitzy background text -->
+    <div class="background-text">hi yitzy</div>
+
+    <div id="dino" class="dino green"></div>
+    <div id="score">Score: 0</div>
+    <div id="high-score">High: 0</div>
+    <div id="timer">Time: 0.00s</div>
+    <div id="recent-runs"></div>
+    <div id="game-over">
+      <h2>Game Over</h2>
+      <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="controls">
+      <button id="jump-btn">Jump</button>
+      <button id="theme-btn">Toggle Day/Night</button>
+      <button id="music-btn">Toggle Music</button>
+    </div>
+  </div>
+
+  <!-- Audio -->
   <audio id="jump-sound" src="jump.mp3" preload="auto"></audio>
   <audio id="hit-sound" src="hit.mp3" preload="auto"></audio>
-  <audio id="bg-music" src="background.mp3" loop preload="auto"></audio>
+  <audio id="bg-music" src="music.mp3" preload="auto" loop></audio>
+
   <script src="script.js"></script>
 </body>
 </html>
