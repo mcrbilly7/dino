@@ -1,6 +1,4 @@
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
@@ -28,30 +26,30 @@ body {
 .dino {
   width: 50px;
   height: 50px;
-  background: url('https://i.imgur.com/OdL0XPt.png') no-repeat center/cover;
   position: absolute;
   bottom: 60px;
   left: 50px;
 }
-.obstacle {
-  position: absolute;
-}
+.dino.green { background: url('https://i.imgur.com/OdL0XPt.png') no-repeat center/cover; }
+.dino.blue  { background: url('https://i.imgur.com/hE5vv2E.png') no-repeat center/cover; }
+.dino.red   { background: url('https://i.imgur.com/SFJklO6.png') no-repeat center/cover; }
+.obstacle { position: absolute; }
 .cactus-small {
   width: 20px;
   height: 40px;
-  background: url('https://i.imgur.com/MlqLh1r.png') no-repeat center/cover;
+  background: green;
   bottom: 60px;
 }
 .cactus-large {
   width: 30px;
   height: 60px;
-  background: url('https://i.imgur.com/eaVwVp3.png') no-repeat center/cover;
+  background: darkgreen;
   bottom: 60px;
 }
 .bird {
   width: 50px;
   height: 35px;
-  background: url('https://i.imgur.com/SfH5QMa.png') no-repeat center/cover;
+  background: black;
   bottom: 130px;
 }
 .ground {
@@ -61,20 +59,26 @@ body {
   background: #444;
   bottom: 40px;
 }
-.score, .high-score {
+.score, .high-score, .timer {
   position: absolute;
-  top: 10px;
   font-size: 18px;
   color: #222;
 }
-.score { left: 10px; }
-.high-score { right: 10px; }
+.score { top: 10px; left: 10px; }
+.high-score { top: 10px; right: 10px; }
+.timer { top: 10px; left: 50%; transform: translateX(-50%); }
+
 .game-over {
   position: absolute;
-  top: 40%;
+  top: 35%;
   width: 100%;
   text-align: center;
   display: none;
+}
+#recent-runs {
+  margin: 10px auto;
+  font-size: 14px;
+  color: #111;
 }
 .start-screen {
   position: absolute;
@@ -88,14 +92,21 @@ body {
   align-items: center;
 }
 button {
-  font-size: 18px;
-  padding: 10px 20px;
-  margin-top: 10px;
+  font-size: 16px;
+  padding: 8px 16px;
+  margin: 8px;
   cursor: pointer;
   border: 2px solid #222;
   background: #eee;
 }
-
+.mobile-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
 .power-up {
   position: absolute;
   width: 30px;
@@ -108,4 +119,7 @@ button {
 }
 .boost {
   background: radial-gradient(orange, red);
+}
+.dark {
+  background: linear-gradient(#111, #333) !important;
 }
