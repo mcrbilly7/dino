@@ -2,25 +2,36 @@ const dino = document.getElementById("dino");
 const game = document.getElementById("game");
 const scoreDisplay = document.getElementById("score");
 const highScoreDisplay = document.getElementById("high-score");
+const timerDisplay = document.getElementById("timer");
+const recentRuns = document.getElementById("recent-runs");
 const gameOverEl = document.getElementById("game-over");
 const startScreen = document.getElementById("start-screen");
-const startBtn = document.getElementById("start-btn");
+
 const jumpSound = document.getElementById("jump-sound");
 const hitSound = document.getElementById("hit-sound");
+const music = document.getElementById("bg-music");
 
-let score = 0;
-let highScore = 0;
-let isJumping = false;
-let isGameRunning = false;
-let speed = 5;
-let spawnDelay = 2000;
-let shieldActive = false;
-let nightMode = false;
+const skinSelect = document.getElementById("skin-select");
+const jumpBtn = document.getElementById("jump-btn");
+const themeBtn = document.getElementById("theme-btn");
+const musicBtn = document.getElementById("music-btn");
 
-startBtn.addEventListener("click", () => {
+let score = 0, highScore = 0, isJumping = false, isGameRunning = false;
+let speed = 5, spawnDelay = 2000, shieldActive = false, nightMode = false;
+let startTime = 0, timerInterval = null;
+let lastRuns = [];
+
+jumpBtn.onclick = jump;
+themeBtn.onclick = () => game.classList.toggle("dark");
+musicBtn.onclick = () => music.paused ? music.play() : music.pause();
+skinSelect.onchange = () => {
+  dino.classList.remove("green", "blue", "red");
+  dino.classList.add(skinSelect.value);
+};
+document.getElementById("start-btn").onclick = () => {
   startScreen.style.display = "none";
   startGame();
-});
+};
 
 function startGame() {
   isGameRunning = true;
@@ -28,18 +39,22 @@ function startGame() {
   speed = 5;
   spawnDelay = 2000;
   shieldActive = false;
-  scoreDisplay.textContent = "Score: 0";
-  highScoreDisplay.textContent = "High Score: " + highScore;
+  dino.className = "dino " + skinSelect.value;
   gameOverEl.style.display = "none";
-  document.querySelectorAll(".obstacle").forEach(o => o.remove());
-  document.querySelectorAll(".power-up").forEach(p => p.remove());
+  scoreDisplay.textContent = "Score: 0";
+  timerDisplay.textContent = "Time: 0.00s";
+  highScore = localStorage.getItem("highScore") || 0;
+  highScoreDisplay.textContent = "High: " + highScore;
+  document.querySelectorAll(".obstacle,.power-up").forEach(el => el.remove());
   dino.style.bottom = "60px";
-  dino.style.backgroundColor = "transparent";
-  document.addEventListener("keydown", jump);
-  document.addEventListener("touchstart", jump);
+  dino.style.border = "none";
+  recentRuns.innerHTML = "";
+  startTimer();
   spawnObstacle();
   spawnPowerUp();
   toggleDayNight();
+  document.addEventListener("keydown", jump);
+  document.addEventListener("touchstart", jump);
 }
 
 function jump() {
@@ -47,12 +62,12 @@ function jump() {
   jumpSound.play();
   isJumping = true;
   let position = 0;
-  let upInterval = setInterval(() => {
+  let up = setInterval(() => {
     if (position >= 150) {
-      clearInterval(upInterval);
-      let downInterval = setInterval(() => {
+      clearInterval(up);
+      let down = setInterval(() => {
         if (position <= 0) {
-          clearInterval(downInterval);
+          clearInterval(down);
           isJumping = false;
         }
         position -= 5;
@@ -66,67 +81,75 @@ function jump() {
 
 function spawnObstacle() {
   if (!isGameRunning) return;
-
-  const obstacle = document.createElement("div");
-  obstacle.classList.add("obstacle");
-
-  const type = Math.random();
-  if (type < 0.4) {
-    obstacle.classList.add("cactus-small");
-  } else if (type < 0.8) {
-    obstacle.classList.add("cactus-large");
-  } else {
-    obstacle.classList.add("bird");
-    animateBird(obstacle);
-  }
-
-  game.appendChild(obstacle);
+  const el = document.createElement("div");
+  el.classList.add("obstacle");
+  const t = Math.random();
+  if (t < 0.4) el.classList.add("cactus-small");
+  else if (t < 0.8) el.classList.add("cactus-large");
+  else { el.classList.add("bird"); animateBird(el); }
+  game.appendChild(el);
   let pos = game.offsetWidth;
-  obstacle.style.left = pos + "px";
-
-  const move = setInterval(() => {
-    if (!isGameRunning) {
-      clearInterval(move);
-      obstacle.remove();
-      return;
-    }
-
+  el.style.left = pos + "px";
+  let move = setInterval(() => {
+    if (!isGameRunning) return clearInterval(move);
     pos -= speed;
-    obstacle.style.left = pos + "px";
-
-    const dinoRect = dino.getBoundingClientRect();
-    const obsRect = obstacle.getBoundingClientRect();
-
-    if (
-      obsRect.left < dinoRect.right &&
-      obsRect.right > dinoRect.left &&
-      obsRect.bottom > dinoRect.top
-    ) {
+    el.style.left = pos + "px";
+    const d = dino.getBoundingClientRect(), o = el.getBoundingClientRect();
+    if (d.right > o.left && d.left < o.right && d.bottom > o.top && d.top < o.bottom) {
       if (shieldActive) {
-        obstacle.remove();
         shieldActive = false;
         dino.style.border = "none";
-        return;
+        el.remove(); return;
       }
       endGame();
       clearInterval(move);
     }
-
     if (pos < -50) {
-      obstacle.remove();
+      el.remove();
       score++;
       scoreDisplay.textContent = "Score: " + score;
       if (score > highScore) {
         highScore = score;
-        highScoreDisplay.textContent = "High Score: " + highScore;
+        highScoreDisplay.textContent = "High: " + highScore;
+        localStorage.setItem("highScore", highScore);
       }
-
-      if (score % 5 === 0 && speed < 20) speed += 0.5;
-      if (score % 5 === 0 && spawnDelay > 700) spawnDelay -= 100;
+      if (score % 5 === 0) {
+        if (speed < 20) speed += 0.5;
+        if (spawnDelay > 700) spawnDelay -= 100;
+      }
     }
   }, 20);
-
   setTimeout(spawnObstacle, spawnDelay);
+}
+
+function spawnPowerUp() {
+  if (!isGameRunning) return;
+  const p = document.createElement("div");
+  p.classList.add("power-up");
+  const t = Math.random();
+  p.classList.add(t < 0.5 ? "shield" : "boost");
+  game.appendChild(p);
+  let pos = game.offsetWidth;
+  p.style.left = pos + "px";
+  p.style.bottom = (t < 0.5 ? 90 : 150) + "px";
+  let move = setInterval(() => {
+    if (!isGameRunning) return clearInterval(move);
+    pos -= speed;
+    p.style.left = pos + "px";
+    const d = dino.getBoundingClientRect(), r = p.getBoundingClientRect();
+    if (r.left < d.right && r.right > d.left && r.bottom > d.top) {
+      if (p.classList.contains("shield")) {
+        shieldActive = true;
+        dino.style.border = "4px solid cyan";
+      } else {
+        speed += 3;
+        setTimeout(() => speed -= 3, 3000);
+      }
+      p.remove(); clearInterval(move);
+    }
+    if (pos < -50) { p.remove(); clearInterval(move); }
+  }, 20);
+  setTimeout(spawnPowerUp, Math.random() * 10000 + 5000);
 }
 
 function animateBird(bird) {
@@ -137,72 +160,29 @@ function animateBird(bird) {
   }, 200);
 }
 
-function spawnPowerUp() {
-  if (!isGameRunning) return;
-
-  const power = document.createElement("div");
-  power.classList.add("power-up");
-
-  const type = Math.random();
-  power.classList.add(type < 0.5 ? "shield" : "boost");
-
-  game.appendChild(power);
-  let pos = game.offsetWidth;
-  power.style.left = pos + "px";
-  power.style.bottom = (type < 0.5 ? 90 : 150) + "px";
-
-  const move = setInterval(() => {
-    if (!isGameRunning) {
-      clearInterval(move);
-      power.remove();
-      return;
-    }
-
-    pos -= speed;
-    power.style.left = pos + "px";
-
-    const dinoRect = dino.getBoundingClientRect();
-    const powerRect = power.getBoundingClientRect();
-
-    if (
-      powerRect.left < dinoRect.right &&
-      powerRect.right > dinoRect.left &&
-      powerRect.bottom > dinoRect.top
-    ) {
-      power.remove();
-      if (power.classList.contains("shield")) {
-        shieldActive = true;
-        dino.style.border = "4px solid cyan";
-      } else {
-        speed += 3;
-        setTimeout(() => {
-          speed -= 3;
-        }, 3000);
-      }
-      clearInterval(move);
-    }
-
-    if (pos < -50) {
-      power.remove();
-      clearInterval(move);
-    }
-  }, 20);
-
-  setTimeout(spawnPowerUp, Math.random() * 10000 + 5000);
-}
-
 function toggleDayNight() {
   setInterval(() => {
     nightMode = !nightMode;
-    game.style.background = nightMode
-      ? "linear-gradient(#222, #444)"
-      : "linear-gradient(#cce, #eef)";
+    game.classList.toggle("dark", nightMode);
   }, 20000);
+}
+
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(() => {
+    const t = ((Date.now() - startTime) / 1000).toFixed(2);
+    timerDisplay.textContent = `Time: ${t}s`;
+  }, 100);
 }
 
 function endGame() {
   isGameRunning = false;
   hitSound.play();
+  clearInterval(timerInterval);
+  const runTime = ((Date.now() - startTime) / 1000).toFixed(2);
+  lastRuns.unshift({ score, time: runTime });
+  lastRuns = lastRuns.slice(0, 5);
+  recentRuns.innerHTML = `<strong>Last 5 Runs:</strong><br>` + lastRuns.map(r => `Score: ${r.score} — Time: ${r.time}s`).join("<br>");
   gameOverEl.style.display = "block";
 }
 
