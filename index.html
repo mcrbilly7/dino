@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dino Game</title>
+  <title>Dino Game Pro</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- START SCREEN -->
   <div id="start-screen">
-    <h1>Dino Game</h1>
+    <h1>Dino Game Pro</h1>
     <button id="start-btn">Start Game</button>
+    <button id="shop-btn">Shop</button>
     <div>
       <label for="skin-select">Choose Skin:</label>
       <select id="skin-select">
@@ -19,11 +21,24 @@
         <option value="gold">Gold</option>
       </select>
     </div>
+    <p id="coin-balance">Coins: 0</p>
   </div>
 
+  <!-- SHOP SCREEN -->
+  <div id="shop-screen" class="hidden">
+    <h2>Shop</h2>
+    <p>Use your coins to unlock skins or themes:</p>
+    <div class="shop-item" data-skin="blue">Blue Dino – 10 coins <button class="buy-btn">Buy</button></div>
+    <div class="shop-item" data-skin="red">Red Dino – 25 coins <button class="buy-btn">Buy</button></div>
+    <div class="shop-item" data-skin="gold">Gold Dino – 50 coins <button class="buy-btn">Buy</button></div>
+    <div class="shop-item" data-theme="dark">Dark Mode Theme – 15 coins <button class="buy-theme-btn">Buy</button></div>
+    <button id="close-shop">Back</button>
+  </div>
+
+  <!-- GAME SCREEN -->
   <div id="game">
-    <!-- Hi Yitzy background text -->
     <div class="background-text">hi yitzy</div>
+    <div class="background-text">Alisha</div>
 
     <div id="dino" class="dino green"></div>
     <div id="score">Score: 0</div>
@@ -38,10 +53,11 @@
       <button id="jump-btn">Jump</button>
       <button id="theme-btn">Toggle Day/Night</button>
       <button id="music-btn">Toggle Music</button>
+      <button id="home-btn">Home</button>
     </div>
   </div>
 
-  <!-- Audio -->
+  <!-- AUDIO -->
   <audio id="jump-sound" src="jump.mp3" preload="auto"></audio>
   <audio id="hit-sound" src="hit.mp3" preload="auto"></audio>
   <audio id="bg-music" src="music.mp3" preload="auto" loop></audio>
