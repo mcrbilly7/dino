@@ -18,16 +18,19 @@ const musicBtn = document.getElementById("music-btn");
 
 let score = 0, highScore = 0, isJumping = false, isGameRunning = false;
 let speed = 5, spawnDelay = 2000, shieldActive = false, nightMode = false;
-let startTime = 0, timerInterval = null;
+let startTime = 0, timerInterval = null, difficultyInterval;
+let difficultyLevel = 1;
 let lastRuns = [];
 
 jumpBtn.onclick = jump;
 themeBtn.onclick = () => game.classList.toggle("dark");
 musicBtn.onclick = () => music.paused ? music.play() : music.pause();
+
 skinSelect.onchange = () => {
   dino.classList.remove("green", "blue", "red");
   dino.classList.add(skinSelect.value);
 };
+
 document.getElementById("start-btn").onclick = () => {
   startScreen.style.display = "none";
   startGame();
@@ -38,7 +41,9 @@ function startGame() {
   score = 0;
   speed = 5;
   spawnDelay = 2000;
-  shieldActive = false;
+  difficultyLevel = 1;
+  clearInterval(difficultyInterval);
+  difficultyInterval = setInterval(increaseDifficulty, 30000); // every 30 sec
   dino.className = "dino " + skinSelect.value;
   gameOverEl.style.display = "none";
   scoreDisplay.textContent = "Score: 0";
@@ -50,7 +55,7 @@ function startGame() {
   dino.style.border = "none";
   recentRuns.innerHTML = "";
   startTimer();
-  spawnObstacle();
+  spawnObstacle(true);
   spawnPowerUp();
   toggleDayNight();
   document.addEventListener("keydown", jump);
@@ -79,31 +84,42 @@ function jump() {
   }, 20);
 }
 
-function spawnObstacle() {
-  if (!isGameRunning) return;
+function spawnObstacle(force = false) {
+  if (!isGameRunning && !force) return;
+
   const el = document.createElement("div");
   el.classList.add("obstacle");
   const t = Math.random();
   if (t < 0.4) el.classList.add("cactus-small");
   else if (t < 0.8) el.classList.add("cactus-large");
   else { el.classList.add("bird"); animateBird(el); }
+
   game.appendChild(el);
   let pos = game.offsetWidth;
   el.style.left = pos + "px";
+
   let move = setInterval(() => {
-    if (!isGameRunning) return clearInterval(move);
+    if (!isGameRunning) {
+      clearInterval(move);
+      return el.remove();
+    }
+
     pos -= speed;
     el.style.left = pos + "px";
+
     const d = dino.getBoundingClientRect(), o = el.getBoundingClientRect();
     if (d.right > o.left && d.left < o.right && d.bottom > o.top && d.top < o.bottom) {
       if (shieldActive) {
         shieldActive = false;
         dino.style.border = "none";
-        el.remove(); return;
+        el.remove();
+        clearInterval(move);
+        return;
       }
       endGame();
       clearInterval(move);
     }
+
     if (pos < -50) {
       el.remove();
       score++;
@@ -113,13 +129,18 @@ function spawnObstacle() {
         highScoreDisplay.textContent = "High: " + highScore;
         localStorage.setItem("highScore", highScore);
       }
-      if (score % 5 === 0) {
-        if (speed < 20) speed += 0.5;
-        if (spawnDelay > 700) spawnDelay -= 100;
-      }
     }
   }, 20);
-  setTimeout(spawnObstacle, spawnDelay);
+
+  const nextDelay = Math.max(800, spawnDelay + Math.random() * 400);
+  setTimeout(() => spawnObstacle(), nextDelay);
+}
+
+function increaseDifficulty() {
+  difficultyLevel++;
+  if (speed < 25) speed += 1;
+  if (spawnDelay > 600) spawnDelay -= 200;
+  console.log(`⬆️ Difficulty increased! Level ${difficultyLevel}`);
 }
 
 function spawnPowerUp() {
@@ -132,6 +153,7 @@ function spawnPowerUp() {
   let pos = game.offsetWidth;
   p.style.left = pos + "px";
   p.style.bottom = (t < 0.5 ? 90 : 150) + "px";
+
   let move = setInterval(() => {
     if (!isGameRunning) return clearInterval(move);
     pos -= speed;
@@ -145,10 +167,15 @@ function spawnPowerUp() {
         speed += 3;
         setTimeout(() => speed -= 3, 3000);
       }
-      p.remove(); clearInterval(move);
+      p.remove();
+      clearInterval(move);
     }
-    if (pos < -50) { p.remove(); clearInterval(move); }
+    if (pos < -50) {
+      p.remove();
+      clearInterval(move);
+    }
   }, 20);
+
   setTimeout(spawnPowerUp, Math.random() * 10000 + 5000);
 }
 
@@ -179,10 +206,12 @@ function endGame() {
   isGameRunning = false;
   hitSound.play();
   clearInterval(timerInterval);
+  clearInterval(difficultyInterval);
   const runTime = ((Date.now() - startTime) / 1000).toFixed(2);
   lastRuns.unshift({ score, time: runTime });
   lastRuns = lastRuns.slice(0, 5);
-  recentRuns.innerHTML = `<strong>Last 5 Runs:</strong><br>` + lastRuns.map(r => `Score: ${r.score} — Time: ${r.time}s`).join("<br>");
+  recentRuns.innerHTML = `<strong>Last 5 Runs:</strong><br>` +
+    lastRuns.map(r => `Score: ${r.score} — Time: ${r.time}s`).join("<br>");
   gameOverEl.style.display = "block";
 }
 
